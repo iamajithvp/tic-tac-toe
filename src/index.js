@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './App.css';
 import './index.css';
 import Board from './Board'
 import reportWebVitals from './reportWebVitals';

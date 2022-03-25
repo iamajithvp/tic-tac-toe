@@ -65,6 +65,12 @@ class Board extends React.Component {
             o = this.lines[i].filter((s) => { return squares[s] === "O" });
             n = this.lines[i].filter((s) => { return squares[s] === null });
 
+            if (o.length > 1 && n.length === 1) {
+                if (n.length) {
+                    w[n[0]] = w[n[0]] ? w[n[0]] + 200 : 200;
+                }
+            }
+
             if (x.length > 1 && o.length === 0) {
                 if (n.length) {
                     w[n[0]] = w[n[0]] ? w[n[0]] + 100 : 100;
