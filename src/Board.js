@@ -65,12 +65,14 @@ class Board extends React.Component {
             o = this.lines[i].filter((s) => { return squares[s] === "O" });
             n = this.lines[i].filter((s) => { return squares[s] === null });
 
+            // if O is about to win, find the 3rd squre
             if (o.length > 1 && n.length === 1) {
                 if (n.length) {
                     w[n[0]] = w[n[0]] ? w[n[0]] + 200 : 200;
                 }
             }
 
+            // if X is about to win find possible squres and block 1
             if (x.length > 1 && o.length === 0) {
                 if (n.length) {
                     w[n[0]] = w[n[0]] ? w[n[0]] + 100 : 100;
