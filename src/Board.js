@@ -8,22 +8,29 @@ class Board extends React.Component {
             squares: Array(9).fill(null),
             xIsNext: true,
             match: [],
-            winner: ""
+            winner: "",
+            status: ""
         };
     }
 
-    handleClick = (i) => {
+    handleClick = async (i) => {
 
-        const squares = this.state.squares.slice();
+        const squares = this.state.squares;
 
-        if (this.calculateWinner(squares) || squares[i]) {
+        if (squares[i]) {
             return;
         }
         squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
+        let nullCount = squares.filter((s) => { return s === null }).length;
+        await this.setState({
             squares: squares,
-            xIsNext: !this.state.xIsNext
+            xIsNext: !this.state.xIsNext,
+            status: nullCount ? "" : "Draw"
         });
+
+        if (this.calculateWinner(squares)) {
+            return;
+        }
 
         if (squares[i] === "X") {
             let next = this.getNext(squares);
@@ -57,44 +64,44 @@ class Board extends React.Component {
     ];
 
     getNext = (squares) => {
-        let x, o, n = [];
-        let w = {};
+        let squaresWithX, squaresWithO, squaresWithNull = [];
+        let weightage = {};
         for (let i = 0; i < this.lines.length; i++) {
 
-            x = this.lines[i].filter((s) => { return squares[s] === "X" });
-            o = this.lines[i].filter((s) => { return squares[s] === "O" });
-            n = this.lines[i].filter((s) => { return squares[s] === null });
+            squaresWithX = this.lines[i].filter((s) => { return squares[s] === "X" });
+            squaresWithO = this.lines[i].filter((s) => { return squares[s] === "O" });
+            squaresWithNull = this.lines[i].filter((s) => { return squares[s] === null });
 
             // if O is about to win, find the 3rd squre
-            if (o.length > 1 && n.length === 1) {
-                if (n.length) {
-                    w[n[0]] = w[n[0]] ? w[n[0]] + 200 : 200;
+            if (squaresWithO.length > 1 && squaresWithNull.length === 1) {
+                if (squaresWithNull.length) {
+                    weightage[squaresWithNull[0]] = weightage[squaresWithNull[0]] ? weightage[squaresWithNull[0]] + 200 : 200;
                 }
             }
 
             // if X is about to win find possible squres and block 1
-            if (x.length > 1 && o.length === 0) {
-                if (n.length) {
-                    w[n[0]] = w[n[0]] ? w[n[0]] + 100 : 100;
+            if (squaresWithX.length > 1 && squaresWithO.length === 0) {
+                if (squaresWithNull.length) {
+                    weightage[squaresWithNull[0]] = weightage[squaresWithNull[0]] ? weightage[squaresWithNull[0]] + 100 : 100;
                 }
             }
 
-            if (x.length === 1 && o.length === 1) {
-                if (n.length) {
-                    w[n[0]] = w[n[0]] ? w[n[0]] + 10 : 10;
+            if (squaresWithX.length === 1 && squaresWithO.length === 1) {
+                if (squaresWithNull.length) {
+                    weightage[squaresWithNull[0]] = weightage[squaresWithNull[0]] ? weightage[squaresWithNull[0]] + 10 : 10;
                 }
             }
 
-            if (x.length === 1 && o.length === 0) {
-                n.forEach(element => {
-                    w[element] = w[element] ? w[element] + 5 : 5;
+            if (squaresWithX.length === 1 && squaresWithO.length === 0) {
+                squaresWithNull.forEach(element => {
+                    weightage[element] = weightage[element] ? weightage[element] + 5 : 5;
                 });
             }
         }
 
         var sortable = [];
-        for (var i in w) {
-            sortable.push([i, w[i]]);
+        for (var i in weightage) {
+            sortable.push([i, weightage[i]]);
         }
 
         sortable.sort(function (a, b) {
@@ -122,6 +129,8 @@ class Board extends React.Component {
         let status;
         if (this.state.winner !== '') {
             status = 'Winner: ' + this.state.winner;
+        } else if (this.state.status != "") {
+            status = 'Draw';
         } else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
