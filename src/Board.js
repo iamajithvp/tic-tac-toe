@@ -21,7 +21,7 @@ class Board extends React.Component {
             return;
         }
         squares[i] = this.state.xIsNext ? 'X' : 'O';
-        let nullCount = squares.filter((s) => { return s === null }).length;
+        let nullCount = squares.filter((s) => { return s === null }).length; 
         await this.setState({
             squares: squares,
             xIsNext: !this.state.xIsNext,
