@@ -32,7 +32,7 @@ class Board extends React.Component {
             return;
         }
 
-        if (squares[i] === "X") {
+        if (squares[i] === "X" && nullCount) {
             let next = this.getNext(squares);
             setTimeout(() => {
                 this.handleClick(next);
